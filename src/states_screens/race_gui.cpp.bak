@@ -51,8 +51,6 @@ using namespace irr;
 #include "utils/constants.hpp"
 #include "utils/string_utils.hpp"
 #include "utils/translation.hpp"
-#include <iostream>
-#include <cstdio>
 
 /** The constructor is called before anything is attached to the scene node.
  *  So rendering to a texture can be done here. But world is not yet fully
@@ -174,9 +172,9 @@ void RaceGUI::renderGlobal(float dt)
     if (!m_is_tutorial)
     {
         //stop displaying timer as soon as race is over
-     //TS -draw it anyway   if (world->getPhase()<WorldStatus::DELAY_FINISH_PHASE)
+        if (world->getPhase()<WorldStatus::DELAY_FINISH_PHASE)
            drawGlobalTimer();
-		   drawGlobalLine2();
+        
         if(world->getPhase() == WorldStatus::GO_PHASE ||
            world->getPhase() == WorldStatus::MUSIC_PHASE)
         {
@@ -219,32 +217,6 @@ void RaceGUI::renderPlayerView(const Camera *camera, float dt)
         drawLap(kart, viewport, scaling);
 
     RaceGUIBase::renderPlayerView(camera, dt);
-
-	bool use_digit_font = true;
-	const float speed = kart->getSpeed();
-	char buffer[50];
-	//		int n, a = 5, b = 3;
-	 sprintf(buffer, "Speed %3.4f\n", speed);
-	 //void WINAPI OutputDebugString(
-		// _In_opt_ LPCTSTR lpOutputString
-		// );
-
-	 core::stringw sw2;
-	 sw2 = _(buffer);
-	 //OutputDebugString(buffer);
-	 std::cout << "buffy " << buffer;
-
-	  
-	 int dist_from_right = 10 + m_timer_width;
-	core::rect<s32> pos2(irr_driver->getActualScreenSize().Width - dist_from_right, 200,
-		irr_driver->getActualScreenSize().Width, 50);
-	gui::ScalableFont* font = (use_digit_font ? GUIEngine::getHighresDigitFont() : GUIEngine::getFont());
-	font->setShadow(video::SColor(255, 128, 0, 0));
-	font->setScale(1.0f);
-	video::SColor time_color = video::SColor(255, 255, 255, 255);
-	time_color = video::SColor(255, 255, 0, 0);
-	font->draw(sw2.c_str(), pos2, time_color, false, false, NULL,
-		true /* ignore RTL */);
 }   // renderPlayerView
 
 //-----------------------------------------------------------------------------
@@ -363,58 +335,6 @@ void RaceGUI::drawGlobalTimer()
                true /* ignore RTL */);
 
 }   // drawGlobalTimer
-
-
-//-----------------------------------------------------------------------------
-/** Displays an extra line
-//TS
-*/
-void RaceGUI::drawGlobalLine2()
-{
-   assert(World::getWorld() != NULL);
-
-    if (!World::getWorld()->shouldDrawTimer())
-    {
-        return;
-    }
-	 
-    core::stringw sw;
-
-    video::SColor time_color = video::SColor(255, 255, 255, 255);
-    int dist_from_right = 10 + m_timer_width;
-
-    bool use_digit_font = true;
-
-    float elapsed_time = World::getWorld()->getTime();
-    if (!race_manager->hasTimeTarget())
-    {
-	
-
-         sw = _("Bikey Master Race");
-
-            int string_width =
-                GUIEngine::getFont()->getDimension(_("Bikey Master Race")).Width;
-            dist_from_right = 10 + string_width;
-            time_color = video::SColor(255,255,0,0);
-            use_digit_font = false;
-    }
- 
-    core::rect<s32> pos(irr_driver->getActualScreenSize().Width - dist_from_right, 150,
-                        irr_driver->getActualScreenSize().Width                  , 50);
-	core::rect<s32> pos2(irr_driver->getActualScreenSize().Width - dist_from_right, 200,
-											irr_driver->getActualScreenSize().Width, 50);
-    gui::ScalableFont* font = (use_digit_font ? GUIEngine::getHighresDigitFont() : GUIEngine::getFont());
-    font->setShadow(video::SColor(255, 128, 0, 0));
-    font->setScale(1.0f);
-    font->draw(sw.c_str(), pos, time_color, false, false, NULL,
-               true /* ignore RTL */);
-
-//	font->draw(sw2.c_str(), pos2, time_color, false, false, NULL,		true /* ignore RTL */);
-
-}   // drawGlobalLine2
-
-
-
 
 //-----------------------------------------------------------------------------
 /** Draws the mini map and the position of all karts on it.
